@@ -40,6 +40,33 @@ emptyFireStrand = FireStrand
   , fireBlack = 0
   }
 
+strandComponents :: Int
+strandComponents = 7
+
+maxFireHeight :: CInt
+maxFireHeight = 2 + 5 * 5 + 10
+
+pixelSize :: CInt
+pixelSize = 10
+
+black, white, red1, red2, red3, red4, red5 :: V4 Word8
+black = V4 0 0 0 255
+white = V4 255 255 255 255
+red1 = V4 255 255 0 255
+red2 = V4 230 30 0 255
+red3 = V4 190 0 0 255
+red4 = V4 130 0 0 255
+red5 = V4 50 0 0 255
+
+originY :: CInt
+originY = 0
+
+originX :: CInt
+originX = 0
+
+fireWidth :: Int
+fireWidth = 100
+
 chunks :: Int -> [a] -> [[a]]
 chunks _ [] = []
 chunks n xs =
@@ -50,12 +77,6 @@ chunks n xs =
 updateFire :: [CInt] -> FireState -> FireState
 updateFire rnds (FireState ss) =
   FireState $ zipWith updateFireStrand (chunks strandComponents rnds) ss
-
-strandComponents :: Int
-strandComponents = 7
-
-maxFireHeight :: CInt
-maxFireHeight = 2 + 5 * 5 + 10
 
 updateFireStrand :: [CInt] -> FireStrand -> FireStrand
 updateFireStrand rnds FireStrand{..} =
@@ -75,24 +96,6 @@ rndLength rnd (lo, hi) = rnd `mod` (hi - lo) + 1
 renderFire :: Renderer -> FireState -> IO ()
 renderFire renderer (FireState ss) =
   mapM_ (uncurry $ renderFireStrand renderer) $ zip [0..] ss
-
-pixelSize :: CInt
-pixelSize = 10
-
-black, white, red1, red2, red3, red4, red5 :: V4 Word8
-black = V4 0 0 0 255
-white = V4 255 255 255 255
-red1 = V4 255 255 0 255
-red2 = V4 230 30 0 255
-red3 = V4 190 0 0 255
-red4 = V4 130 0 0 255
-red5 = V4 50 0 0 255
-
-originY :: CInt
-originY = 0
-
-originX :: CInt
-originX = 0
 
 renderFireStrand :: Renderer -> CInt -> FireStrand -> IO ()
 renderFireStrand renderer xOffset FireStrand{..} = do
@@ -124,9 +127,6 @@ eventIsKeyPressed keyCode event =
     KeyboardEvent keyboardEvent ->
       keyboardEventKeyMotion keyboardEvent == Pressed && keysymKeycode (keyboardEventKeysym keyboardEvent) == keyCode
     _ -> False
-
-fireWidth :: Int
-fireWidth = 100
 
 fireLoop :: StdGen -> Renderer -> FireState -> IO ()
 fireLoop gen renderer fire = do
