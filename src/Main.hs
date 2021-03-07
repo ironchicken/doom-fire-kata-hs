@@ -18,7 +18,9 @@ data FireStrand
   , fireRed3 :: CInt
   , fireRed4 :: CInt
   , fireRed5 :: CInt
-  , fireBlack :: CInt
+  , fireBlack1 :: CInt
+  , fireRed6 :: CInt
+  , fireBlack2 :: CInt
   }
   deriving (Show)
 
@@ -37,14 +39,16 @@ emptyFireStrand = FireStrand
   , fireRed3 = 0
   , fireRed4 = 0
   , fireRed5 = 0
-  , fireBlack = 0
+  , fireBlack1 = 0
+  , fireRed6 = 0
+  , fireBlack2 = 0
   }
 
 strandComponents :: Int
-strandComponents = 7
+strandComponents = 9
 
 maxFireHeight :: CInt
-maxFireHeight = 2 + 5 * 5 + 10
+maxFireHeight = 2 + 5 + 5 + 5 + 4 + 4 + 2 + 2 + 10
 
 pixelSize :: CInt
 pixelSize = 10
@@ -85,9 +89,11 @@ updateFireStrand rnds FireStrand{..} =
   , fireRed1 = rndLength (rnds !! 1) (2, 5)
   , fireRed2 = rndLength (rnds !! 2) (2, 5)
   , fireRed3 = rndLength (rnds !! 3) (1, 5)
-  , fireRed4 = rndLength (rnds !! 4) (1, 5)
-  , fireRed5 = rndLength (rnds !! 5) (2, 5)
-  , fireBlack = rndLength (rnds !! 6) (4, 10)
+  , fireRed4 = rndLength (rnds !! 4) (1, 4)
+  , fireRed5 = rndLength (rnds !! 5) (2, 4)
+  , fireBlack1 = rndLength (rnds !! 6) (0, 2)
+  , fireRed6 = rndLength (rnds !! 7) (0, 2)
+  , fireBlack2 = rndLength (rnds !! 8) (4, 10)
   }
 
 rndLength :: CInt -> (CInt, CInt) -> CInt
@@ -104,14 +110,20 @@ renderFireStrand renderer xOffset FireStrand{..} = do
       yOffset2 = yOffset1 - fireRed2
       yOffset3 = yOffset2 - fireRed3
       yOffset4 = yOffset3 - fireRed4
-      yOffset5 = yOffset4 - originY
+      yOffset5 = yOffset4 - fireRed5
+      yOffset6 = yOffset5 - fireBlack1
+      yOffset7 = yOffset6 - fireRed6
+      yOffset8 = yOffset6 - originY
 
   drawPixels fireWhite xOffset yOffset0 white
   drawPixels fireRed1 xOffset yOffset1 red1
   drawPixels fireRed2 xOffset yOffset2 red2
   drawPixels fireRed3 xOffset yOffset3 red3
   drawPixels fireRed4 xOffset yOffset4 red4
-  drawPixels fireBlack xOffset yOffset5 black
+  drawPixels fireRed5 xOffset yOffset5 red4
+  drawPixels fireBlack1 xOffset yOffset6 black
+  drawPixels fireRed6 xOffset yOffset7 red4
+  drawPixels fireBlack2 xOffset yOffset8 black
 
   where
     drawPixels h left top colour = do
